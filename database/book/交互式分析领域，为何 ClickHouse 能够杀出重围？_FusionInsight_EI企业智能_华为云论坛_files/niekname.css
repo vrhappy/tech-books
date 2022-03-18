@@ -1,0 +1,234 @@
+ <style>
+        *{
+            margin: 0; padding: 0;
+        }
+        @media (min-width: 768px) {
+         
+            html,body{
+                font-size:14px!important;
+            }
+
+        }
+        /*===========aui-dialog start==========*/
+        .aui-dialog-mask{
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: rgba(0,0,0,.6);
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity .5s;
+        }
+        .oldIE .aui-dialog-mask{
+            background-color: #000;
+            filter: alpha(opacity=40);
+        }
+        .aui-dialog-main {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            max-width: 100%;
+            max-height: 100%;
+            margin: auto;
+            background: #fff;
+            /*visibility: hidden;*/
+            overflow: auto;
+            opacity: 0;
+            transition: opacity .5s;
+            display: none\0;
+            box-shadow: 0px 5px 20px rgba(0,0,0,.3);
+            transform: scale(0);
+            transition: transform .3s cubic-bezier(0.05, 0.62, 0.5, 1.18), opacity .3s;
+        }
+        .aui-dialog-main.hidden{
+            /*display: none;*/
+            visibility: hidden;
+        }
+        .aui-dialog.show .aui-dialog-mask {
+            visibility: visible;
+            opacity: 1;
+        }
+        .aui-dialog.show .aui-dialog-main {
+            visibility: visible;
+            opacity: 1;
+            display: block\0;
+            transform: scale(1);
+            /* height: auto;*/
+        }
+        .aui-dialog.shown .aui-dialog-main{
+            animation: shake .5s;
+        }
+        @keyframes shake {
+            from, to {
+                -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+            }
+
+            10%, 30%, 50%, 70%, 90% {
+                -webkit-transform: translate3d(-10px, 0, 0);
+                transform: translate3d(-10px, 0, 0);
+            }
+
+            20%, 40%, 60%, 80% {
+                -webkit-transform: translate3d(10px, 0, 0);
+                transform: translate3d(10px, 0, 0);
+            }
+        }
+
+
+
+        /*===========aui-dialog:end==========*/
+
+
+        .aui-dialog.show .aui-dialog-main {
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99;
+            margin: auto!important;
+            background: #fff;
+            font-family: "Microsoft Yahei",Arial,"Hiragino Sans GB",sans-serif;
+            width: 450px;
+            height: 200px;
+        }
+
+        .aui-dialog-main,.aui-dialog-main.hidden {
+            visibility: hidden
+        }
+
+        .aui-dialog.shown .aui-dialog-main {
+            animation: shake .5s
+        }
+
+
+
+        .aui-dialog-main .dialog-content {
+            padding: 30px 30px 0;
+            background: #fff
+        }
+
+        #region-select .aui-dialog-main .dialog-content {
+            padding: 40px 50px
+        }
+
+        .aui-dialog-main .dialog-content p {
+            font-size: 14px;
+            color: #666
+        }
+
+        .aui-dialog .dialog-close-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            font-family: Arial;
+            line-height: 30px;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #999;
+            z-index: 1;
+        }
+
+        .aui-dialog .dialog-head {
+            height: 60px;
+            padding: 10px 20px;
+            background-color: #7a858f;
+            line-height: 40px
+        }
+
+        .aui-dialog .dialog-head .caption {
+            color: #fff;
+            font-size: 16px;
+            line-height: 40px;
+            margin: 0
+        }
+
+        .aui-dialog .dialog-actions {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+        }
+
+        .aui-dialog .aui-btn-red,.aui-dialog{
+            margin: 0 10px;
+            padding: 6px 25px;
+
+        }
+         aui-dialog{
+             display: none;
+         }
+        .aui-btn-red {
+            background: gray;
+            border: 1px solid rgb(212, 213, 215);
+            display: inline-block;
+            color: #fff;
+            padding: 4px 20px;
+       
+            font-size: 14px;
+            line-height: 20px;
+
+         
+            text-align: center;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+        .aui-btn-red:hover {
+            background: #f53642
+        }
+        .service-dialog .dialog-block-title {
+            margin-left: -30px;
+        }
+
+        .dialog-block-title {
+            color: #252B3A;
+            font-size: 24px;
+            line-height: 30px;
+            padding-left: 30px;
+            margin-bottom: 20px;
+            border-left: 3px solid #e31d2a;
+            font-weight: 400;
+        }
+
+
+        /*以上代码环境中已有*/
+
+
+        /*新增弹窗样式 设置昵称  start*/
+        .aui-dialog.show .aui-dialog-main-timed-reminder{
+            height: 280px;
+        }
+        .aui-dialog.show .aui-dialog-main-comment{
+            height: 280px;
+        }
+        .aui-dialog-text-warn{
+            display: inline-block;
+            color:#e41f2b;
+            font-size: 12px;
+        }
+        .timed-reminder-info {
+            margin-top: 20px;
+        }
+        .timed-reminder-info input{
+            width: 350px;
+            height: 43px;
+            line-height: 43px;
+            padding-left: 10px;
+            margin-bottom: 5px;
+            border:#e2e2e2 1px solid;
+        }
+        .aui-btn-black{
+            border:#ddd 1px solid;
+            background: #fff;color:#000;
+        }
+        .aui-btn-black:hover{
+            color: #e41e2b;
+            background: #fff;
+            border: 1px solid #e41e2b;
+        }
+        /*新增弹窗样式 设置昵称  end*/
+       .aui-dialog { padding: 10px 25px;}
+    </style>

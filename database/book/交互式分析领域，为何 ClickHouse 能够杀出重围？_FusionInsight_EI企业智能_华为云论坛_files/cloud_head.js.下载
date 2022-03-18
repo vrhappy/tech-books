@@ -1,0 +1,258 @@
+jq(function(){
+    //官网页头加载
+    window.pageKey = "bbs";
+    var headerUrl = "";
+
+    // if(location.pathname.indexOf("\/community\/")>-1 || location.pathname.indexOf("\/home")>-1) {
+    if(location.pathname.indexOf("\/home.php")>=0 || location.pathname.indexOf("\/spaceuniversal")>=0) {
+        headerUrl = WWW_HOST+"/common/subsite/personal-header.html";
+    } else {
+        headerUrl = WWW_HOST+"/common/subsite/develop-header.html";
+    }
+
+    jq.ajax({
+        url: headerUrl,
+        // async: false,
+        success: function(data){
+            var regurl = location.href.split('#')[0];
+            var allHtml = jq(data);
+            jq("#header").prepend(allHtml.find("#header>div"));
+            jq("body").append(allHtml.find("#footer"));
+            jq("body").append("<script src='https://www.huaweicloud.com/content/dam/cloudbu-site/archive/china/static/v2_resources/js/portal-global.js?"+VERHASH+"'/><script src='"+WWW_HOST+"/content/dam/cloudbu-site/archive/china/static/header-hc/js/lazyload/index.min.js?"+VERHASH+"'/>");
+            jq("body").append("<script src='https://forum-static.huaweicloud.com/static/hwcloud/js/gray.js?"+VERHASH+"' />");
+            jq(".header-login .js-login,.header-login-mobile a,#header_cloud_seller_center .js-login").attr("data-login-href","member.php?mod=logging&action=login");
+            jq(".header-login .js-login,.header-login-mobile a,#ydcomm_home_login,#header_cloud_seller_center .js-login").attr("href","member.php?mod=logging&action=login");
+            var win_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            if(win_width < 768) {
+                // jq("#register-mb").attr("href","https://reg.huaweicloud.com/registerui/public/custom/mobile/mobileRegister4microMessenger.html?service="+regurl);
+                jq("#ydcomm_home_forum").parents(".header-collapse.header-collapse-level1").addClass("now");
+                jq(".header-main").append("<h3 class='header-main-title'>云社区</h3>");
+            }
+
+            if(typeof afterScriptPropmt == "function"){
+                var data = {} ;
+                afterScriptPropmt(data);
+            }
+
+            if(location.pathname.indexOf("\/community\/")>-1) {
+                jq(".header-mbnav").each(function(){
+                    if(jq(this).data("subsite-name") !== "bbs") {
+                        jq(this).remove();
+                    }
+                });
+            }
+
+            jq(".header-lang .header-site:eq(1) .header-site-right .header-lang-item:eq(1) a").attr("href","https://www.huaweicloud.com/en-us/");
+            jq(".header-site-left").css({"white-space":"nowrap"});
+            //添加当前页选中状态
+            var hrefStr = window.location.pathname;
+            jq(".header-register .js-register,#ydcomm_home_register").attr("href","https://reg.huaweicloud.com/registerui/public/custom/register.html?service="+regurl);
+
+            if(hrefStr == '/' || hrefStr == '/ydcomm') {
+                hrefStr = "/community";
+            }
+            if(hrefStr.indexOf("webinar")>-1) {
+                hrefStr = "/cloudwebinar";
+            }
+            jq("#header .header-nav ul li").each(function(){
+                if(hrefStr.indexOf(jq(this).data("key")) > -1) {
+                    jq(this).find("a").addClass('now');
+                }
+            });
+
+            //国际站用户判断
+            if(interGroup) {
+                jq('.header-subsite-tools').remove();
+            }
+
+            //登录后 用户信息点击
+            jq(function(){
+                /*用户名信息内容*/
+                jq("body").on("mouseover", ".header-subsite-right-item", function(){
+                    jq(this).addClass("active");
+                }).on("mouseleave", ".header-subsite-right-item", function(){
+                    jq(this).removeClass("active");
+                    jq(".header-subsite-right-item ul").removeClass("active");
+                    jq(".header-subsite-right-item ul").eq(0).addClass("active");
+                });
+                var maxHeight = 0,
+                    activeHeight = 0;
+                jq("body").on("click", ".header-subsite-right-item ul .menu-user-tit", function(){
+                    if(jq(this).parent().hasClass("active")) {
+                        return;
+                    }
+                    activeHeight = jq(".menu-user-title-customize").height();
+                    maxHeight = activeHeight > maxHeight ? activeHeight : maxHeight;
+                    jq(".header-subsite-right-item-menu").height(maxHeight);
+                    jq(this).parent().siblings().removeClass("active");
+                    jq(this).parent().toggleClass("active");
+                });
+            });
+            showlogref(loginchek);
+            window.$subsitePostfix = 't_65_p_1';
+        }
+    });
+
+    //校验app隐藏导航头
+    endCustomer();
+
+    var times="even";
+    function doAni(){
+        if(times === "even") {
+            jq(".icon-new").css({"top":"18px"});
+            jq("#more_cloudwebinar_nav .icon-new").css({"top":"0px"});
+            times='odd';
+        } else {
+            jq(".icon-new").css({"top":"21px"});
+            jq("#more_cloudwebinar_nav .icon-new").css({"top":"3px"});
+            times='even';
+        }
+    }
+    setInterval(doAni,500);
+    function showlogref(loginchek) {
+        if(loginchek == true){
+            /**************登录后处理 start********************/
+            jq(".header-user-avator img").attr("src",authorphoto);
+            jq(".header-user-avator img").attr("alt","用户信息");
+            jq("#header_cloud_seller_center .js-login,#personal_logo").attr("href","/community/itrends/id_"+ authorid);
+            jq(".user-info").find('.my-acct').text(getBytes(username,10));
+            jq(".user-info").find('.my-acct').attr("title",username);
+
+            /************移动端******/
+            jq("#ydcomm_home_name").html(username);
+            jq("#ydcomm_home_name").attr('href','https://bbs.huaweicloud.com/community/iblognew/id_'+authorid);
+            jq(".mobile_headmenu_login").show();
+            jq(".mobile_headmenu_outLogin").hide();
+            // jq(".logged-in-avatar").attr("src",authorphoto);
+
+            var certificationUrl = 'https://bbs.huaweicloud.com/community/certifiedinfo/id_'+authorid;
+            var loginInfo = '';
+            loginInfo += '<div class="menu-user-title menu-user-title-customize">';
+            loginInfo += '<ul class="active">';
+            loginInfo += '<li class="click-more menu-user-tit">我的开发者</li>';
+            loginInfo += '<li class="menu-user-list">';
+            loginInfo += '</li>';
+            loginInfo += '<li class="menu-user-list">';
+            loginInfo += '<a class="menu-user-btn myBlog" id="my_blog" href="https://bbs.huaweicloud.com/community/myblog">我的博客</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="menu-user-list">';
+            loginInfo += '<a class="menu-user-btn myForum" id="my_forum" href="home.php?mod=space&do=index">我的论坛</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="menu-user-list">';
+            loginInfo += '<a class="menu-user-btn myHero" id="myhero" href="https://developer.huaweicloud.com/hero/group.php?mod=myhero&op=joined&do=join">我的联盟</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="click-more menu-user-list">';
+            loginInfo += '<a class="menu-user-btn mysuggestions" id="mysuggestions" href="https://bbs.huaweicloud.com/mysuggestion">我的云声</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="menu-user-list">';
+            loginInfo += '<a class="menu-user-btn myLive" id="myLive" href="https://bbs.huaweicloud.com/community/mylive">我的直播</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="click-more menu-user-list">';
+            loginInfo += '<a class="menu-user-btn" id="my_signup" href="https://developer.huaweicloud.com/usercenter/mysignup">我的活动</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="click-more menu-user-list">';
+            loginInfo += '<a class="menu-user-btn" id="myCommunity_bonus" href="https://devcloud.huaweicloud.com/bonususer/home/converge">我的码豆</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="menu-user-list">';
+            loginInfo += '<a class="menu-user-btn myFollow" id="my_follow" href="https://bbs.huaweicloud.com/community/myfollow">我的关注</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="menu-user-list">';
+            loginInfo += '<a class="menu-user-btn myLove" id="my_love" href="https://bbs.huaweicloud.com/community/myblogcollect">我的收藏</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="menu-user-list">';
+            loginInfo += '<a class="menu-user-btn myComment" id="my_comment" href="https://bbs.huaweicloud.com/community/myblogcomment">我的评论</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="click-more menu-user-list">';
+            loginInfo += '<a class="menu-user-btn myCertify" id="my_certify" href="'+certificationUrl+'">专家认证</a>';
+            loginInfo += '</li>';
+            loginInfo += '</ul><ul>';
+
+            loginInfo += '<li class="click-more menu-user-tit" id="personal-click-edu">我的云学院</li>';
+            loginInfo += '<li class="click-more menu-user-list">';
+            loginInfo += '<a class="menu-user-btn" id="my_study" href="https://education.huaweicloud.com/dashboard?isAuth=1&cfrom=hwc">我的学习</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="click-more menu-user-list">';
+            loginInfo += '<a class="menu-user-btn" id="my_mycertification" href="https://edu.huaweicloud.com/certifications/mycertification/">我的微认证</a>';
+            loginInfo += '</li>';
+            loginInfo += '</ul><ul>';
+
+            loginInfo += '<li class="click-more menu-user-tit" id="personal-click-personal">个人资料</li>';
+            loginInfo += '<li class="click-more menu-user-list">';
+            loginInfo += '<a class="menu-user-btn mySetting" id="my_setting" href="https://bbs.huaweicloud.com/community/myinfo">基本资料</a>';
+            loginInfo += '</li>';
+            loginInfo += '<li class="click-more menu-user-list">';
+            loginInfo += '<a class="menu-user-btn mySignupSetting" id="my_signup_setting" href="https://developer.huaweicloud.com/usercenter/signupInfo">报名资料</a>';
+            loginInfo += '</li>';
+            loginInfo += '</ul>';
+            loginInfo += '</div>';
+            jq(".header-subsite-right-item-menu").html(loginInfo);
+            jq(".header-user-info .account-nav .logout a,#ydcomm_home_out").attr("href","member.php?mod=logging&action=logout");
+            jq("#header").addClass('logined');
+
+            if (typeof afterPersonalLoginFn == "function") {
+                afterPersonalLoginFn({id:authorid});
+            }
+
+            jq("body").on("click",".view-more",function(){
+                jq(this).hide().siblings().show();
+            });
+            /**************登录后处理 end********************/
+        }
+    }
+
+    //字数限制
+    function getBytes(str,num){
+        var bytesCount=0;
+        var value='';
+        var len = str.length;
+        var value1 = value2 = '';
+        for(var i = 0; i < len; i++){
+            var c = str.charAt(i);
+            value += c;
+            if (/^[\u0000-\u00ff]$/.test(c)){
+                bytesCount += 1;
+            }else{
+                bytesCount += 2;
+            }
+            if(bytesCount <= num){
+                value1 = value;
+            }
+            if(bytesCount > num){
+                value2 = value1+"...";
+            }
+        }
+        if(bytesCount <= num) {
+            return value1;
+        } else if(bytesCount > num) {
+            return value2;
+        }
+    }
+
+    /*******app 隐藏 start**********/
+    function endCustomer(){
+        if(/(pcloudApp|galaxy)/i.test(navigator.userAgent) ) {
+            hideSome();
+        }else{
+            var str = location.search;
+            var suband = "type=android";
+            var subios = "type=ios";
+            if( findStr(str,subios) || findStr(str,suband) ){
+                hideSome();
+            }
+        }
+    }
+    function findStr(a,b){
+        return a.indexOf(b)>=0;
+    }
+    function hideSome(){
+        jq("#header").css({'display':'none'});
+
+        if(jq('header').length > 0 && jq('.ry-cancelBtn').length <= 0 ) {
+            jq("header").css({'display':'none'});
+            jq(".sc-wrapper").css({'marginTop':'0'});
+        }
+    }
+
+    /*******app 隐藏 end**********/
+
+});

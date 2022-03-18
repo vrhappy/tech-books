@@ -1,0 +1,42 @@
+.popup{display: none;overflow: hidden;position: fixed;top: 20.8%;width: 400px;background: #FFFFFF;box-shadow: 0 10px 40px 0 rgba(0,0,0,0.10);border-radius: 2px;text-align: left;z-index: 99;}
+.popContainer{padding-top: 30px;}
+.popHead{border-left: 3px solid #C7000B;line-height: 22px;height: 22px;margin-bottom: 30px;}
+.tipText{font-size: 22px;color: #252B3A;margin-left: 27px;}
+.popCont{padding-left: 30px;overflow: hidden;}
+.popImg1{width: 40px;height: 35px;float: left;margin-right: 20px;margin-top: 5px;}
+.popText{display: inline-block;max-width: 234px;}
+.popText>p{font-size: 18px;color: #252B3A;line-height: 22px;}
+.popText>span{display: inline-block;margin-top: 5px;line-height: 18px;font-size: 12px;color: #666A75;}
+.popFood{text-align: center;margin: 30px 0 40px 0;}
+.popFood .cancel{cursor: pointer;margin-right: 10px;font-size: 14px;color: #FFFFFF;background: #C7000B;border-radius: 2px;border: 0;padding: 10px 30px;border: 1px solid #F66F6A;box-sizing: border-box;height: 40px;line-height: 18px;}
+.popFood .cancel:hover{background: #f24651;}
+.popFood .continue{cursor: pointer;border: 1px solid #C7000B;border-radius: 2px;font-size: 14px;color: #C7000B;background: #fff;padding: 10px 30px;height: 40px;box-sizing: border-box;margin-right: 10px;line-height: 18px;}
+.closeBtnTip{cursor: pointer;display: inline-block;width: 12px;height: 12px;background: url(../images/clear.png) no-repeat;background-size: 100% 100%;position: absolute;right: 22px;top: 22px;}
+
+.exitG .popImg1{margin-top: 0px;}
+.exitG .popText{margin-top: 6px;}
+/*移动端*/
+.popGary{background: rgba(0,0,0,.2);position: fixed;left: 0;right: 0;top: 0;bottom: 0;display: none;z-index: 98;}
+.wpopup{display: none;position: fixed;left: 0;right: 0;top: 35.6%;padding: 0 0.346666rem;text-align: left;z-index: 10;}
+.wpopup .popContainer{position: relative;overflow: hidden;background: #FFFFFF;box-shadow: 0 10px 40px 0 rgba(0,0,0,0.10);border-radius: 2px;padding-top: 0.533333rem;}
+.wpopup .popHead{border-left: 0.08rem solid #F66F6A;line-height:0.426666rem;height: 0.426666rem;margin-bottom: 0.533333rem;}
+.wpopup .tipText{font-size: 0.426666rem;color: #252B3A;margin-left: 0.453333rem;}
+.wpopup .popImg1{width: 1.06666rem;height: 0.933333rem;float: left;margin-right: 0.533333rem;margin-top: 0;}
+.wpopup .popText{max-width: inherit;margin-top: 0.133333rem;}
+.wpopup .popText>p{font-size: 0.426666rem;color: #252B3A;line-height: 0.586666rem;}
+.wpopup .popFood{text-align: center;margin: 0.8rem 0;}
+.wpopup .cancel{margin-right: 0.266666rem;font-size: 0.373333rem;color: #FFFFFF;background: #F66F6A;border-radius: 2px;border: 0;padding: 0.186666rem 0.8rem;border: 1px solid #F66F6A;box-sizing: border-box;height: 0.853333rem;line-height: 0.48rem;}
+.wpopup .continue{border: 1px solid #F66F6A;border-radius: 2px;font-size: 0.373333rem;color: #F66F6A;background: #fff;padding: 0.186666rem 0.8rem;height: 0.853333rem;box-sizing: border-box;line-height: 0.48rem;}
+.wpopup .closeBtn{display: inline-block;width: 0.32rem;height: 0.32rem;background: url(../images/clear.png) no-repeat;background-size: 100% 100%;position: absolute;right: 0.32rem;top: 0.32rem;}
+
+.wtips{display: none;position: fixed;top: 8.533333rem;left: 0;right: 0;padding: 0 1.81rem;z-index: 10;}
+.wtipContainer{background: rgba(0,0,0,0.80);border-radius: 2px;padding: 0.24rem 0.533333rem;margin: 0 auto;text-align: left;}
+.wtipContainer>p{font-size: 0.32rem;max-width: 4.48rem;color: #FFFFFF;letter-spacing: 0;line-height: 0.48rem;display: inline-block;max-width: 4.48rem;vertical-align: middle;}
+.attention{display: inline-block;width: 0.426666rem;vertical-align: middle;height: 0.426666rem;background: url(../images/attention.png) no-repeat;background-size: 100% 100%;margin-right: 0.266666rem;}
+.successful{display: inline-block;width: 0.426666rem;vertical-align: middle;height: 0.426666rem;background: url(../images/successful.png) no-repeat;background-size: 100% 100%;margin-right: 0.266666rem;}
+
+.popHeadPrompt{border-left: 3px solid #5093D0;line-height: 22px;height: 22px;margin-bottom: 30px;}
+
+
+
+

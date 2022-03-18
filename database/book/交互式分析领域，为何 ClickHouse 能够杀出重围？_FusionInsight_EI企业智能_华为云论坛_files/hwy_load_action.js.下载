@@ -1,0 +1,101 @@
+jq(function (){
+    if(ROW_TYPE == 'portal_index') {
+        // 论坛首页diy轮播 插件具体参数请查看superslide官网api
+        jQuery(".slideBox").slide({
+            mainCell: ".bd ul",
+            autoPlay: true,
+            delayTime: 500,
+            interTime:5000,
+            trigger: "click",
+            autoPage: '<li><a></a></li>',
+            titCell: '.hd ul'
+        });
+        function overTextidx(){
+            jq('.listtypeA .billList li').each(function(){
+                var defHeight=jq(this).height();
+                if (defHeight>36) {
+                    jq(this).addClass('maxheight36');
+                    jq(this).find('.showText').show();
+                }
+            });
+        }
+        //周榜切换
+        jq('.listA').on('click', function(){
+            var liInd = jq(this).index();
+            jq(this).addClass('listActi').siblings('a').removeClass('listActi');
+            jq(this).parents('.indRbg').find('.liConBox .liCon').eq(liInd).addClass('show').siblings().removeClass('show');
+            overTextidx();
+        });
+
+        var hre = jq('.indLhref').attr('href');
+        if(hre == '' || hre == 'javascript:;' || hre == '#') {
+            jq('.indLhref').removeAttr('href');
+        } else {
+            jq('.indLhref').addClass('hrefActi');
+        }
+    } else if(ROW_TYPE == 'viewthread') {
+        if(picstyle && (ismoderator || uid == authorid)) {
+            function showsetcover(obj) {
+                if(obj.parentNode.id == 'postmessage_$_G[forum_firstpid]') {
+                    var defheight = $_G['setting']['forumpicstyle']['thumbheight'];
+                    var defwidth = $_G['setting']['forumpicstyle']['thumbwidth'];
+                    var newimgid = 'showcoverimg';
+                    var imgsrc = obj.src ? obj.src : obj.file;
+                    if(!imgsrc) return;
+
+                    var tempimg=new Image();
+                    tempimg.src=imgsrc;
+                    if(tempimg.complete) {
+                        if(tempimg.width < defwidth || tempimg.height < defheight) return;
+                    } else {
+                        return;
+                    }
+                    if(jq(newimgid) && obj.id != newimgid) {
+                        jq(newimgid).id = 'img'+Math.random();
+                    }
+                    if($(newimgid+'_menu')) {
+                        var menudiv = jq(newimgid+'_menu');
+                    } else {
+                        var menudiv = document.createElement('div');
+                        menudiv.className = 'tip tip_4 aimg_tip';
+                        menudiv.id = newimgid+'_menu';
+                        menudiv.style.position = 'absolute';
+                        menudiv.style.display = 'none';
+                        obj.parentNode.appendChild(menudiv);
+                    }
+                    menudiv.innerHTML = '<div class="tip_c xs0"><a onclick="showWindow(\'setcover_'+newimgid+'\', this.href)" href="forum.php?mod=ajax&amp;action=setthreadcover&amp;tid=$_G[tid]&amp;pid=$_G[forum_firstpid]&amp;fid=$_G[fid]&imgurl='+imgsrc+'">{lang set_cover}</a></div>';
+                    obj.id = newimgid;
+                    showMenu({'ctrlid':newimgid,'pos':'12'});
+                }
+                return;
+            }
+        }
+
+        function succeedhandle_followmod(url, msg, values) {
+            var fObj = $('followmod_'+values['fuid']);
+            if(values['type'] == 'add') {
+                fObj.innerHTML = '{lang nofollow}';
+                fObj.href = 'home.php?mod=spacecp&ac=follow&op=del&fuid='+values['fuid'];
+            } else if(values['type'] == 'del') {
+                fObj.innerHTML = '{lang follow}';
+                fObj.href = 'home.php?mod=spacecp&ac=follow&op=add&hash={FORMHASH}&fuid='+values['fuid'];
+            }
+        }
+
+        jq('.levelPer').on('click',function(){
+            jq('.aleMask').show();
+        });
+    }
+});
+
+function stopEvent(event){
+    //取消事件冒泡
+    var e = arguments.callee.caller.arguments[0] || event;
+    if(e && e.stopPropagation) {
+        e.stopPropagation();
+    } else if (window.event) {
+        window.event.cancelBubble = true;
+    }
+}
+
+

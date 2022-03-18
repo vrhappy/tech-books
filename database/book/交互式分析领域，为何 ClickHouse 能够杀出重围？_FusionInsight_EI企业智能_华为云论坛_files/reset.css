@@ -1,0 +1,201 @@
+/* http://meyerweb.com/eric/toolseset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,/css/r
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+h1,h2,h3,h4,h5,h6{margin: 0;padding: 0;}
+html, body, div, ul, li, p{margin:0;padding:0;}
+ul{ list-style:none;}
+img{border:0;max-width:100%;}
+table{border-collapse:collapse;border-spacing:0;}
+textarea{resize:none;}
+body{background-color: #fff;}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+ol li {
+    list-style: decimal;
+
+}
+ ul  li{
+    list-style: none;
+    outline: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+* {
+	outline: none;
+	-webkit-appearance: none;
+    box-sizing: border-box;
+    word-break: break-word;
+}
+a {
+    text-decoration:none;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    outline: none;
+}
+body{font-size: 0;}
+a:focus {
+	outline: none;
+}
+
+img,a,input[type="button"],input[type="submit"],input[type="date"],input[type="text"],input[type="reset"] {
+	-webkit-appearance: none;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+	outline: none;
+	/*border-radius: 0;*/
+}
+a:hover {
+    text-decoration:none;
+    outline:none;
+    
+}
+a:link,a:active,a:hover,a:visited{
+	outline: none;
+	-webkit-appearance: none;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+}
+.clear {
+    clear:both;
+}
+select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+a:focus{
+ text-decoration:none;
+ outline:none;
+ }
+
+
+* {     
+    -webkit-tap-highlight-color: transparent;  
+    -webkit-appearance: none;  
+} 
+input[type="checkbox"]{     
+    -webkit-tap-highlight-color: transparent;  
+    -webkit-appearance: checkbox;  
+} 
+input[type="radio"]{     
+    -webkit-tap-highlight-color: transparent;  
+    -webkit-appearance: radio;  
+} 
+.clearfix {
+    *zoom:1;
+}
+
+.clearfix:after {
+    content:"\20";
+    clear:both;
+    display:block;
+}
+
+/*----- pop -----*/	
+	
+td, th, div{
+    word-break:break-all;
+    word-wrap:break-word;
+}
+table, tbody, tfoot, thead, tr, th, td{margin: 0;padding: 0;font: 14px/1.5 "微软雅黑", "Microsoft Yahei", "华文细黑", STXihei, STHeiti, Arial, sans-serif;font-size: 100%;vertical-align: top;}
+table{border-collapse: collapse;border-spacing: 0;}
+input:disabled{
+    color: rgba(84, 84, 84 ,0.1);
+}
+
+
+/* 页头页脚样式修改 */
+.menu-user-title{z-index:2;}
+/*.wrapper-menu-triangle:before{
+    position: absolute;
+    float: right;
+    left:115px!important;
+    top: 24px!important;
+    border-right: 3px solid transparent;
+    border-top: 3px solid #fff;
+    border-left: 3px solid transparent;
+    content: '';
+    margin: 0!important;
+}*/
+/*.wrapper-top{
+    width: 1180px;
+}*/
+
+.post-content strong{ font-weight: bolder; }
+.pn em {font-weight: normal;}
+.header-menu-customize .wrapper-menu-nav {font-size: 16px;} 
+.wrapper-top{
+    min-width: 1180px;
+}
+.pm_op_r{
+    padding-right: 55px!important;
+}
+.pm_o .o{
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background: url(../images/news_icon.png) no-repeat;
+    vertical-align: middle;
+    cursor: pointer;
+    margin: 0 0 0 8px!important;
+
+}
+.pm_o .o:hover{
+    background: url(../images/news_icon_active.png) no-repeat;
+}
+.p_pop li a{
+    color: #252B3A;
+}
+.tbmu{
+    border-bottom: 0;
+}
+.pgb a{
+    border: 1px solid #d2d2d2;
+}
+.pgb a:hover{
+    border: 1px solid #d2d2d2;
+    color: #252B3A;
+}
+.pg{
+    margin-right: 30px;
+}
+.pg a.nxt{
+    border: 1px solid #d2d2d2;
+}
+.pg a.nxt:hover{
+    border: 1px solid #d2d2d2;
+    color: #252B3A;
+}
+
+
+

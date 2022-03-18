@@ -1,0 +1,135 @@
+jq(document).ready(function(){
+    /*global XSAlbum*/
+    // var zoomScaleInit=null;
+    //点击图片生成轮播图
+
+    var dataIndex = 0;
+    // 有封面的活动帖，需要给封面预留位置
+    if (jq('#activityThumb').length > 0) {
+        dataIndex = 1;
+    }
+    jq('.ueditor_content').each(function () {
+        if(jq(this).attr('id')) {
+            jq(this).find('img').each(function () {
+                // 先移除编辑时可能复制来的类名
+                jq(this).removeClass('new-carousel');
+
+                // 忽略附件图标
+                if (!/ueditor\/dialogs\/attachment\/fileTypeImages/.test(jq(this).attr('src'))) {
+                    // 忽略图片超链接
+                    if (!jq(this).parents('a').length) {
+                        jq(this).addClass('new-carousel').removeAttr('onclick').attr('data-index', dataIndex);
+                        dataIndex++;
+                    }
+                }
+            });
+        }
+    });
+
+    var _imgCounts=jq(".new-carousel").length;
+    var _imgIndex=[];
+    var indexInit;
+    var imgdefereds=[];
+    jq('img').each(function(){
+        var dfd=jq.Deferred();
+        jq(this).bind('load',function(){
+            dfd.resolve();
+        }).bind('error',function(){
+            // dfd.resolve();
+            // console.log("图片加载错误");
+        });
+        if(this.complete){
+            setTimeout(function(){
+                dfd.resolve();
+            },100);
+        }
+        imgdefereds.push(dfd);
+    });
+
+    // function imgLoad(img, callback) {
+    //     var timer = setInterval(function() {
+    //         if(img.complete) {
+    //             callback(img);
+    //             clearInterval(timer);
+    //         }
+    //     }, 50);
+    // }
+    function fillImgInfo(){
+        for(var i=0;i<_imgCounts;i++){
+            var _imgInfo={
+                "picPos":i,
+                "selfPic":jq(".new-carousel:eq("+i+")")[0].src,
+                "bigPic":jq(".new-carousel:eq("+i+")")[0].src,
+                "thumbPic":jq(".new-carousel:eq("+i+")")[0].src,
+                "smallPic":jq(".new-carousel:eq("+i+")")[0].src,
+                "width":jq(".new-carousel:eq("+i+")")[0].width,
+                "height":jq(".new-carousel:eq("+i+")")[0].height
+            };
+            _imgIndex.push(_imgInfo);
+        }
+    }
+
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    var isOpera = userAgent.indexOf("Opera") > -1;
+    //判断是否IE浏览器
+    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+        fillImgInfo();
+    }
+    //判断是否Edge浏览器
+    if (userAgent.indexOf("Trident") > -1) {
+        fillImgInfo();
+    }
+    //chrome、firefox
+    // jq.when.apply(null,imgdefereds).done(function(){
+        fillImgInfo();
+
+    // });
+    //初始化插件
+    XSAlbum.init({
+        "curPic":indexInit,
+        "picList":_imgIndex,
+        "isFullScreen":false
+    });
+    jq("body").on("click",".new-carousel",function(){
+        var win_width = window.innerWidth || document.body.clientWidth || document.documentElement.clientWidth;
+        var win_height = window.innerHeight || document.body.clientHeight || document.documentElement.clientHeight;
+        win_width -= 360;
+        win_height -= 260;
+        jq(".banner").css({
+            "width":win_width + "px",
+            "height":win_height + "px"
+        });
+        var _newWi=jq('.banner').css("width").replace("px","")*1,
+            _newHe=jq('.banner').css("height").replace("px","")*1;
+        jq('.maxPic').css({
+            "width": _newWi+'px',
+            "height": _newHe+"px"
+        });
+
+        jq(".banner-box").css({
+            "z-index":"10",
+            "background-color":"rgba(0,0,0,.6)"
+        }).show();
+        indexInit=jq(this)[0].attributes['data-index'].value;
+        //传递当前打开图片的index
+        XSAlbum.changePic(1,indexInit);
+        jq(".banner").show();
+        jq("html,body").css("overflow","hidden");
+        XSAlbum.imgHover();
+    });
+    //新窗打开
+    jq("body").on('click','.new-win',function(){
+        var _url=jq("#mainPic")[0].src;
+        window.open(_url,'_blank');
+    });
+    //关闭图集|点击空白关闭
+    jq(".banner-box,.close").bind('click', function() {
+        jq("html,body").removeAttr("style");
+        jq(".banner-box").hide();
+        jq("#mainPic").removeAttr("style");
+    });
+    jq("#imgbox,.imgitem,.change-box-pre,.change-box-next,#mainPic").bind('click', function(event) {
+        event.stopPropagation();
+    });
+
+});

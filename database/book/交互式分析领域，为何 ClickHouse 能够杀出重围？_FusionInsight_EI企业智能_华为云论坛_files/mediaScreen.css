@@ -1,0 +1,73 @@
+/*20200904 论坛/联盟页面宽度调整 by lyy start*/
+
+.indRbg,.unRCbox,.indRo,.groR{width: 288px;}
+
+@media (min-width: 1440px){
+	.wp,.indTbox,.conBox,.groCon,.indCbox,.unCbox{width: 1280px;}
+	.content-detail .td-left,.pls{width: 240px;}
+	.plc {max-width: 1040px;}
+	.indLo,.indLcon,.groL{width: 968px;}
+	.indLchi{width: 470px;}
+	.wrapper-main{width: 1280px;}
+	.mainTextRight{width: 723px;}
+	.unionPlaceul li,.unionEquity ul li{width: 416px;}
+	.roleIntroduction ul li{width: 416px;}
+	.unionNotice ul li{width: 632px;}
+	.sporList li,.inReList li{width: 395px;}
+	.td-left .favatar,.pls .favatar{width: 238px;}
+	.bannerCont{width: 1280px;margin: 0 auto;}
+	.bannerForumBoxPos{width: 1280px;margin: 0 auto;position: relative;}
+	.hwSwp .slideBox .hd{display: inline-block;width: auto;width: 705px;text-align: left;left: 0;right: 0;position: absolute;margin: 0 auto;}
+	.unfocusList li{width: 312px;}
+	.forum_suspendBox{position: relative;width: 1280px;margin: 0 auto;}
+	#crumbs{width: 1280px;}
+}
+@media screen and (min-width:768px) and (max-width:1439px){
+	html {overflow-x: scroll;min-width: calc(1200px + 3% * 2)!important;min-width: -moz-calc(1200px + 3% * 2)!important;min-width: -webkit-calc(1200px + 3% * 2)!important;}
+	.wp,.indTbox,.conBox,.groCon,.indCbox,.unCbox{width: 1200px;margin: 0 auto;}
+	.content-detail .td-left,.pls{width: 220px;}
+	.indLo,.indLcon,.groL{width: 888px;}
+	.indLchi{width: 430px;}
+	.unList li,.sporList li,.inReList li{width: 369px;}
+	.unionPlaceul li{width: 389px}
+	.bannerCont{width: 1200px;margin: 0 auto;}
+	.bannerForumBoxPos{width: 1200px;margin: 0 auto;position: relative;}
+	.unfocusList li{width: 282px;}
+	#crumbs{width: 1200px;}
+	.plaChi .plaCR .plaName a{max-width: 84px;}
+	.schematic{margin-right: 39px;}
+	.myForumRight,.constRight{width: 889px;}
+	.draft td:first-child {width: 381px;}
+	.actiTheme,.acTheme>div{width: 218px;}
+}
+/*全部板块*/
+@media (max-width: 1300px) {
+	.forum_suspend{position: absolute;top: 120px;font-size: 12px;text-align: center;border: 1px solid #EBEBEB;color: #252B3A;box-shadow: 0 4px 8px 0 rgba(0,0,0,0.10);font-family: PingFangSC-Regular;border-radius: 2px;z-index: 199;}
+	.suspend_li{height: 40px;width: 40px;background: #fff;padding: 8px 0 8px;}
+	.forum_name{display: none;}
+	.suspend_title{width: 40px;line-height: 14px;height: 39px;padding: 5px 7px 0;box-sizing: border-box;background: #F5F5F6;}
+	.fixTop20{position: fixed;top: 60px;}
+	.suspendActive{background: #C7000B;color: #fff;}
+	.section-moderator .recommend-box p.recommend-text{max-width: 860px;}
+	.schematic{margin-right: 39px;}
+}
+@media (max-width: 767px) {
+	html {overflow-x: scroll;min-width:1230px!important;}
+	.wp,.indTbox,.conBox,.groCon,.indCbox,.unCbox{width: 1200px;margin: 0 auto;}
+	.content-detail .td-left,.pls{width: 220px;}
+	.indLo,.indLcon,.groL,.constRight{width: 888px;}
+	.indLchi{width: 430px;}
+	.unList li,.sporList li,.inReList li{width: 369px;}
+	.unionPlaceul li{width: 389px}
+	.bannerCont{width: 1200px;margin: 0 auto;}
+	.bannerForumBoxPos{width: 1200px;margin: 0 auto;position: relative;}
+	.unfocusList li{width: 282px;}
+	#crumbs{width: 1200px;}
+	.plaChi .plaCR .plaName a{max-width: 84px;}
+	.myForumRight,.constRight{width: 889px;}
+	.draft td:first-child {width: 381px;}
+	.actiTheme,.acTheme>div{width: 281px;}
+}
+
+/*20200904 论坛/联盟页面宽度调整 by lyy end*/
+

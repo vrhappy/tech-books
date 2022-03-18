@@ -1,0 +1,77 @@
+var download;
+jq(function() {
+    var t = {}
+      , e = {}
+      , n = {}
+      , o = jq(document).attr("title")
+      , i = (window.location.host || "").split(".")[0] || ""
+      , c = window.location.href
+      , a = "";
+    document.referrer.length > 0 && (a = document.referrer);
+    try {
+        0 == a.length && opener.location.href.length > 0 && (a = opener.location.href);
+    } catch (r) {};
+    if(D2_id != 0){
+        e.C2 = D2_id;
+    }
+    if(forumid != 0){
+        e.D16 = forumid;
+    }
+    if(D17_id != 0){
+        e.D17 = D17_id;
+    }
+    t.UserAccount = user_id || "host",
+    t.isdebug = !0,
+    e.C1 = o,
+    e.D15 = "DZ",
+    e.D1 = "Forum",
+    n.C1 = i,
+    jq.getScript("https://res.hc-cdn.com/bi/uba.js", function() {
+
+        init(2, "c9770c4dac06fe3b76ec9c7ad47273d0", "UA-55836286-1", t);
+        // onPageView(window.location.pathname + window.location.search, e),
+        bipageview();
+        jq("body [mate_data_ts]").each(function() {
+            jq(this).bind("click", function() {
+                var t = jq(this).attr("mate_data_ts")
+                  , e = t.split(".");
+                if (e.length) {
+                    var o = "";
+                    "" != e[2] && (o = e[2] + "_" + c),
+                    n.D15 = 'CC';
+                    n.D1 = 'Forum';
+                    onEvent((e[0] || "").replace("#domain_pre#", i), e[1] || "", o, 1, n);
+                }
+
+
+                // var e=jq(this).attr("mate_data_ts"),
+                // a=e.split(".");
+                // a.length&&onEvent(a[0],a[1],[2],a[3],{D15:'LT'});
+            })
+        })
+    })
+});
+
+function bipageview(){
+    if( typeof(onPageView) == 'function' && typeof(_sendPageView) == 'function' ){
+        var q = jq(document).attr("title");
+        var e = {};
+        e.C1 = q;
+        if(D2_id != 0){
+            e.C2 = D2_id;
+        }
+        e.D15 = 'DZ';
+        if(forumid != 0){
+            e.D16 = forumid;
+        }
+        if(D17_id != 0){
+            e.D17 = D17_id;
+        }
+        e.D1 = 'Forum';
+
+        var bipage = window.location.pathname+window.location.search;
+        onPageView(bipage,e);
+    }else{
+        setTimeout('bipageview()',1000);
+    }
+}

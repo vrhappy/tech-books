@@ -1,0 +1,178 @@
+(function($){
+
+    var portalLoginDomain = "https://portal.huaweicloud.com"; ///api/mc/user/mc/v1/e07b8d1c6c084b429a4571fbb592a43d/messages/envelope/unread
+    var totalMsg = 0;
+
+    function userTotalMsg() {
+        if (totalMsg < 1) return;
+        if ($('.msg-num').length > 0) {
+            $('.msg-num').text(totalMsg > 99 ? '99+' : totalMsg);
+            return;
+        }
+        $('.my-acct').after('<span class="msg-num">' + (totalMsg > 99 ? '99+' : totalMsg) + '</span>');
+    }
+
+    function getScript(win, doc, tag, src, always) {
+        var script = doc.createElement(tag),
+            h = doc.getElementsByTagName(tag)[0];
+        script.async = 1;
+        script.src = src;
+
+        if (script.addEventListener) {
+            script.addEventListener("load", always, false);
+        } else if (script.attachEvent) {
+            script.attachEvent("onreadystatechange", function() {
+                var target = window.event.srcElement;
+                if (target.readyState == "loaded" || target.readyState == "complete") {
+                    always.call(target);
+                }
+            });
+        }
+        h.parentNode.insertBefore(script, h)
+    }
+    function getMessage(domain_id) {
+        var url = portalLoginDomain + '/api/mc/user/mc/v1/' + domain_id + '/messages/envelope/unread';
+        $.ajax({
+            dataType: "json",
+            timeout: 10000,
+            type: 'get',
+            url: url,
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function(data) {
+                if (data.total > 0) {
+                    $('.user-info').addClass('msg');
+                    if (data.total < 10) {
+                        $('.user-info').addClass('msg1');
+                        $('.message span').text(data.total);
+                    } else if (data.total < 100) {
+                        $('.user-info').addClass('msg2');
+                        $('.message span').text(data.total);
+                    } else {
+                        $('.user-info').addClass('msg3');
+                        $('.message span').text("99+");
+                    }
+                    totalMsg+=data.total;
+                }
+                userTotalMsg();
+            },
+            error: function(data) {
+
+            }
+        })
+    }
+
+    function getOrder() {
+        var url = portalLoginDomain+'/user/getbillinginfo';
+        $.ajax({
+            dataType: "json",
+            timeout: 10000,
+            type: 'get',
+            url: url,
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function(data) {
+                if (data.data.toPendingOrderCount == 0 || data.data.toPendingOrderCount == -1) {
+                    $('.user-info').addClass('ord1');
+                    $('.order span').hide();
+                }
+                if (data.data.toPendingRenewalCount == 0 || data.data.toPendingRenewalCount == -1) {
+                    $('.user-info').addClass('mag1');
+                    $('.management span').hide();
+                }
+                if (data.data.toPendingOrderCount > 0) {
+                    if (data.data.toPendingOrderCount < 10) {
+                        $('.user-info').addClass('ord1');
+                        $('.order span').text(data.data.toPendingOrderCount);
+                    } else if (data.data.toPendingOrderCount < 100) {
+                        $('.user-info').addClass('ord2');
+                        $('.order span').text(data.data.toPendingOrderCount);
+                    } else {
+                        $('.user-info').addClass('ord3');
+                        $('.order span').text("99+");
+                    }
+                    totalMsg+=data.data.toPendingOrderCount;
+                };
+                if (data.data.toPendingRenewalCount > 0) {
+                    if (data.data.toPendingRenewalCount < 10) {
+                        $('.user-info').addClass('mag1');
+                        $('.management span').text(data.data.toPendingRenewalCount);
+                    } else if (data.data.toPendingRenewalCount < 100) {
+                        $('.user-info').addClass('mag2');
+                        $('.management span').text(data.data.toPendingRenewalCount);
+                    } else {
+                        $('.user-info').addClass('mag3');
+                        $('.management span').text("99+");
+                    }
+                    totalMsg+=data.data.toPendingRenewalCount;
+                }
+                userTotalMsg();
+            },
+            error: function(data) {}
+        })
+    }
+
+    var ua = navigator && navigator.userAgent;
+
+    function getUserverified() {
+        var url = portalLoginDomain + "/api/bss/userverified?callback=?";
+        $(".account-item .account-verification").hide();
+        jQuery.getJSON(url, function(data) {
+            if (data) {
+                if (data.retCode == "0") {
+                    if (data.isVerified) {
+                        isVerified = true;
+                        $(".account-item .account-verification").show().addClass("active");
+                        $(".phone-acct").find(".account-pic").show();
+                        $(".account-pic-no-ident").hide();
+                        $(".true-name-li").hide();
+                    } else {
+                        $(".account-item .account-verification").show().removeClass("active");
+                        if (!data.isShow) {
+                            if (ua.toLowerCase().indexOf('android') > -1 || (/iPad/i).test(ua) || (/iPhone/i).test(ua)) {
+                                $("body").removeClass("autShow");
+                            } else {
+                                $("body").addClass("autShow");
+                                over = setInterval(settime, 1000); //1000毫秒
+
+                            };
+                        } else {
+                            $("body").removeClass("autShow");
+                        };
+                        $(".phone-acct").find(".account-pic").hide();
+                        $(".account-pic-no-ident").show();
+                        $(".true-name-li").show();
+                    }
+                } else {
+                    $(".phone-acct").find(".account-pic").show();
+                    $(".account-pic-no-ident").hide();
+                    $(".true-name-li").hide();
+                }
+            } else {
+                $(".phone-acct").find(".account-pic").show();
+                $(".account-pic-no-ident").hide();
+                $(".true-name-li").hide();
+            }
+        });
+    }
+    time = 10;
+
+    function settime() {
+        time--;
+        if (time == 0) {
+            clearInterval(over);
+            //倒计时结束
+            $("body").removeClass("autShow");
+        }
+    }
+
+    $("body").on('click', '.Authentication .close', function(event) {
+        $("body").removeClass("autShow");
+    });
+    window.getScript = getScript;
+    window.getMessage = getMessage;
+    window.getOrder = getOrder;
+    window.getUserverified = getUserverified;
+})(jQuery)

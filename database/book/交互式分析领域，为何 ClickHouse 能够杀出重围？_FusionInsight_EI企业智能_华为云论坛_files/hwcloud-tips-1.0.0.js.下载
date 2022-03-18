@@ -1,0 +1,229 @@
+/*
+* Author: ZhanYinghui email: 854987653@qq.com date:2019-08-01
+* 华为云PC端 -- 弹框插件
+*
+* var paramConfig = {
+    textArr: {
+        tipsTop:'提示',   //必须，弹框顶部提示，如 "温馨提示"
+        title:'您有未发表的帖子',   //必须，弹框一级提示内容
+        tages:'您可以继续编辑,此操作将覆盖当前帖子内容，确定要恢复数据吗？<a>',  //不必须，弹框二级提示内容
+        tagesHref:{tagesA:'了解详情',tagesH:'https://bbs.huaweicloud.com',target:'1'},
+        imgSign:notice, //图片标识  notice warning error success tips
+    },
+    btnArr : [
+        {
+            type:"continue",    //按钮类型 continue 白色按钮，cancel 红色按钮
+            name:"继续编辑",    //按钮text
+            link:"",    //按钮链接
+            callback:'',    //按钮回调方法
+            callbackParam:redraftStart  //按钮回调方法传参
+        },
+    ]
+};
+tipsModal(paramConfig); //调用
+*
+* */
+
+function tipsModal(config){
+    var yes_click = null,
+        no_click = null,
+        yes_link = null,
+        no_link = null,
+        yes_callback = null,
+        no_callback = null,
+        yes_callbackParam = null,
+        no_callbackParam = null,
+        closeTips = null,
+        btnArr = null,
+        imgSign = 'notice',
+        tipsImg = new Array()
+        tipsImg['notice'] = 'Shape.jpg';
+        tipsImg['tips'] = 'prompt.svg';
+        tipsImg['success'] = 'success.svg';
+
+        setting = jq.extend({}, {
+            textArr: {
+                tipsTop:'提示',
+                title:'您有未发表的帖子',
+                tages:'',
+                tagesHref: {tagesA:'',tagesH:'',target:''},
+                imgSign:'notice',
+            },
+            btnArr : [
+                {type:"cancel",name:"取消",link:"",callback:"",callbackParam:""},
+                {type:"continue",name:"确定",link:"",callback:"",callbackParam:""},
+            ]
+        }, config),
+        init = function(){
+            var wp = document.getElementById("wp");
+
+            //创建遮罩层
+            var popGary = document.createElement("div");
+            popGary.className = "popGary";
+            wp.appendChild(popGary);
+
+            //创建弹框
+            var popup = document.createElement("div");
+            var popContainer = document.createElement("div");
+            var closeBtn = document.createElement("i");
+            var popHead = document.createElement("div");
+            var popCont = document.createElement("div");
+            var popFood = document.createElement("div");
+            var popImg1 = document.createElement("img"); //img图标标签
+            var popText = document.createElement("div");
+            popup.className = "popup";
+            popContainer.className = "popContainer";
+            closeBtn.className = "closeBtnTip";
+            imgSign = setting.textArr.imgSign == undefined ? 'notice' : setting.textArr.imgSign;
+            if (imgSign == 'notice') {
+                popHead.className = "popHead";
+            } else if (imgSign == 'tips' || imgSign == 'success') {
+                popHead.className = "popHeadPrompt";
+            }
+            popCont.className = "popCont";
+            popFood.className = "popFood";
+            popImg1.className = "popImg1";
+            popText.className = "popText";
+            popImg1.src = cdn_host+"static/hwcloud/images/"+tipsImg[imgSign];
+
+            wp.appendChild(popup);
+            popup.appendChild(popContainer);
+            popup.appendChild(closeBtn);
+            popContainer.appendChild(popHead);
+            popContainer.appendChild(popCont);
+            popContainer.appendChild(popFood);
+            popCont.appendChild(popImg1);
+            closeTips = closeBtn;
+
+            //提示
+            var tipText = document.createElement("span");
+            var tipTextNode = document.createTextNode(setting.textArr.tipsTop);
+            tipText.className = "tipText";
+            //提示 append
+            tipText.appendChild(tipTextNode);
+            popHead.appendChild(tipText);
+
+            //title
+            var popTextP = document.createElement("p");
+            var popTextTit = document.createTextNode(setting.textArr.title);
+            //title append
+            popTextP.appendChild(popTextTit);
+            popText.appendChild(popTextP);
+            if(setting.textArr.tages) {
+                var popTextSpan = document.createElement("span");
+                var tagesStr = setting.textArr.tages;
+
+                //tages
+                var popTextSpanTit = document.createTextNode(tagesStr);
+                //tages append
+                popTextSpan.appendChild(popTextSpanTit);
+
+                if(setting.textArr.tagesHref != undefined) {
+                    var tagesA = setting.textArr.tagesHref.tagesA;
+                    var tagesH = setting.textArr.tagesHref.tagesH;
+                    var target = setting.textArr.tagesHref.target;
+
+                    popTextSpan = domToString(popTextSpan);
+
+                    var a1=document.createElement('a');//创建a标签
+                    var a1text=document.createTextNode(tagesA);
+                    a1.appendChild(a1text);
+                    a1.setAttribute('href',tagesH);
+                    a1.style.color = '#526ECC';
+                    if(target == 1) {
+                        a1.setAttribute('target','_blank');
+                    }
+
+                    var a1str = domToString(a1);
+                    popTextSpan = popTextSpan.replace('&lt;a&gt;',a1str);
+                    popText = stringToDom(popTextSpan, popText);
+                } else {
+                    popText.appendChild(popTextSpan);
+                }
+            } else {
+                popup.classList.add("exitG");
+            }
+            popCont.appendChild(popText);
+
+            //按钮风格
+            btnArr = setting.btnArr;
+            for(var i=0;i<btnArr.length;i++) {
+                if(btnArr[i].name) {
+                    var rowBtn = document.createElement("button");
+                    var rowText = document.createTextNode(btnArr[i].name);
+                    rowBtn.className = btnArr[i].type;
+                    rowBtn.appendChild(rowText);
+                    popFood.appendChild(rowBtn);
+
+                    if(btnArr[i].type == 'cancel') {
+                        no_click = rowBtn;
+                        no_link = btnArr[i].link;
+                        no_callback = btnArr[i].callback;
+                        no_callbackParam = btnArr[i].callbackParam;
+                    } else if(btnArr[i].type == 'continue') {
+                        yes_click = rowBtn;
+                        yes_link = btnArr[i].link;
+                        yes_callback = btnArr[i].callback;
+                        yes_callbackParam = btnArr[i].callbackParam;
+                    }
+                }
+            }
+        },
+        show = function(){
+            var windWidth =jq(window).width();
+            var popWidth =jq('.popup').width();
+            var left_=(windWidth-popWidth)/2;
+            jq('.popup').show().css({'left':left_ + "px"});
+            jq('.popGary').show();
+        },
+        hide = function(){
+            jq('.popup').remove();
+            jq('.popGary').remove();
+        };
+
+    init();
+    show();
+
+    if(yes_click!=null) {
+        yes_click.onclick = function(){
+            if(yes_link) {
+                window.location.href = yes_link;
+            } else if(typeof yes_callback == "function") {
+                yes_callback(yes_callbackParam);
+            }
+            hide();
+        }
+    }
+
+    if(no_click!=null) {
+        no_click.onclick = function(){
+            if(no_link) {
+                window.location.href = no_link;
+            } else if(typeof no_callback == "function") {
+                no_callback(no_callbackParam);
+            }
+            hide();
+        }
+    }
+    if(closeTips!=null) {
+        closeTips.onclick = function(){
+            hide();
+        }
+    }
+}
+
+
+function domToString (node) {
+    let tmpNode = document.createElement('div')
+    tmpNode.appendChild(node)
+    let str = tmpNode.innerHTML
+    tmpNode = node = null; // 解除引用，以便于垃圾回收
+    return str;
+}
+
+function stringToDom(txt,toThtml) {
+    var da = toThtml.innerHTML;
+
+    toThtml.innerHTML = da+txt;
+    return toThtml;
+}

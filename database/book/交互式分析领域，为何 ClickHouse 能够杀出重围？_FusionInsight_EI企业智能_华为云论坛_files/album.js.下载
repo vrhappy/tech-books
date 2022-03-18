@@ -1,0 +1,570 @@
+var XSAlbum = {
+    thumbListContainer : ".gallery_demo_unstyled",//缩略图列表选择器
+    picCountContainer : ".img-num",//照片总数选择器
+    currPicContainer : ".img-cur",//当前是第几张的选择器
+    curPic: 0,//当前查看的第几张图
+    mode : 0,//0为普通清晰度，1为高清（原图）
+    showThumb : true,//是否显示缩略图过度效果
+    moveTimer: "",//自动播放定时器
+    loadAllThumb: false,//加载所有缩略图（废弃）
+    playTime: 3000,//播放间隔时间
+    playState: true,//播放状态
+    isPlaying: false,//是否在自动播放中
+    isFullScreen : false,//是否是全屏查看
+    isHideThumbList : false,//是否显示缩略图列表
+    zoomScaleInit : null,//缩放数值
+    picList: [],//照片数据
+    getPage: 1,//缩略图列表的滚动次数
+    thumbPageSize : 5,//每次加载的缩略图图片数
+    callbackChangePic : function(){},//加载图片后回调
+    onChangeWH : function(){},//宽高发生变化时调用
+    changeList: function(f, c) { //滚动列表
+        var self = this;
+        var b = this.getPage;
+        var d = self.picList.length;
+        var pageSize = 7;
+        if (d > pageSize) {
+            var e = 111;//每一张图的大致宽度
+            b = parseInt(b);
+            if (typeof(c) != "undefined") {
+                b = parseInt(c);
+                if (b < 1) {
+                    b = 1;
+                }
+                if (b > d - pageSize) {
+                    b = d - pageSize;
+                }
+            } else {
+                if ("1" == f) {
+                    b = b + pageSize;
+                    if (b > (d - pageSize)) {
+                        b = d - pageSize
+                    }
+                } else {
+                    b = b - pageSize;
+                    if (b < 1) {
+                        b = 1;
+                    }
+                }
+            }
+            this.getPage = b;
+            var a = (b - 1) * e;
+            jq(self.thumbListContainer).animate({
+                    left: -a
+                },
+                {
+                    queue: false
+                });
+            if (this.curPic > 5 || b > 3) {
+                this.loadThumbPic();
+            }
+        }
+    },
+    changePic : function(f, a, isInit) { //加载图片,f表示方向，a表示照片索引
+        var self = this;
+        var index = self.curPic;
+        var len = self.picList.length;
+        //计算索引值有没有超出范围
+        if (typeof(a) != "undefined") {//如果没有传值表示默认下一张，传了值就是图片的索引值
+            index = parseInt(a);
+            if (index < 0) {
+                index = 0;
+            }
+            if (index >= len) {
+                index = len-1;
+//              self.autoPlay(false);
+            }
+        } else {
+            if ("1" == f) {//下一张
+                index = parseInt(index) + 1;
+                if (index >= len) {
+                    index = 0;
+                }
+            } else {//上一张
+                if(index==0){
+                    index = len;
+                }
+                index = parseInt(index) - 1;
+                if (index < 0) {
+                    index = len;
+                }
+            }
+        }
+        //加载当前图片
+        self.curPic = index;
+        var cData = self.getCurrentData();
+        if(typeof(cData) == "undefined"){
+            return;
+        }
+        this.checkAndLoadImg(self.getCurrentDataUrl(), document.getElementById("mainPic"));
+
+        //给选择的图片加class
+        jq(self.thumbListContainer+" li").removeClass("actives");
+        jq(self.thumbListContainer+" li").eq(cData.picPos-1).addClass("actives");
+
+        //修改地址栏地址
+//      this.changeURl(self.curPic);
+        //预加载当前图片后面的图片
+        //this.preLoad(self.curPic);
+        //滚动缩略图列表
+        this.changeList(1, self.curPic - 2);
+        //当前浏览张数
+        jq(self.currPicContainer).html(self.curPic+1);
+        //回调
+        self.callbackChangePic();
+    },
+    preLoad : function(a) {//预加载（废弃）
+        var self = this;
+        self.superPreLoadImage(self.picList, parseInt(a));
+    },
+    switchMode : function(){//切换清晰度
+        var self = this;
+        if(self.mode == 0){
+            self.mode = 1;
+        }else{
+            self.mode = 0;
+        }
+        self.showThumb = false;
+        self.changePic(1,self.curPic);
+        self.showThumb = true;
+    },
+    loadPic : function(f, a, c){//加载图片
+        var self = this;
+        //如果有在自动播放，先停止自动播放
+        if(self.playState){
+            self.playState = false;
+//          self.stopAutoPlay();
+        }
+        self.changePic(f, a, c);
+    },
+    turnPicOnkeyDown : function() {//给左右方向键增加响应事件
+        var self = this;
+        jq(document).keydown(function(a) {
+            if (a.keyCode == 37) {//左键
+                self.loadPic(0);
+            }
+            if (a.keyCode == 39) {//右键
+                self.loadPic(1);
+            }
+        });
+    },
+    loadThumbPic: function() {//加载缩略图
+        var self = this;
+        var size = self.thumbPageSize;
+        var min = self.curPic-size < 0 ? 0 : self.curPic-size;
+        var max = self.curPic+size > self.picList.length ? self.picList.length : self.curPic+size;
+        jq(self.thumbListContainer+" img").each(function(i,o){
+            if(i>min || i<max){
+                if(jq(o).attr("isload") == 0){
+                    jq(o).attr("src",jq(o).attr("rurl"));
+                    jq(o).attr("isload",1);
+                }
+            }
+        });
+    },
+    checkAndLoadImg: function(imgUrl, bigImgObj) {//真正加载中间图片
+        var self = this;
+        var beginLoad = false;//避免点击过快加载重复
+        if(beginLoad == true) return;
+        beginLoad = true;
+        if(self.showThumb){
+            //先显示缩略图，并拉伸缩略图
+            var cData = self.getCurrentData();
+            bigImgObj.src = cData.smallPic;
+            self.setImgWidthHeight(cData.width, cData.height);
+        }
+        //再让大图显示
+        jq(".indexbody-loading").show();
+        var img = new Image();
+        jq(img).load(function(){
+            bigImgObj.src = imgUrl;
+            jq(".indexbody-loading").hide();
+        });
+        img.src = imgUrl;
+
+        beginLoad = false;
+        return true;
+
+    },
+    superPreLoadImage: function(d, c) {//预加载（废弃）
+        var self = this;
+        var e = 2;
+        var a = 0;
+        while (e && typeof d[c + a] != "undefined") {
+            var b = new Image();
+            b.src = self.getCurrentDataUrl(c + a);//d[c + a].bigPic;
+            if (b.complete) {
+                a++;
+            } else {
+                a++;
+                e--;
+            }
+        }
+    },
+    selectByurl: function() {//从URL中获取到当前照片索引
+        var self = this;
+        var b = window.location.href;
+        var a = b.split("#");
+        if (typeof(a[1]) != "undefined") {
+            var c = a[1].split("=");
+            if (typeof(c[1]) != "undefined") {
+                if (c[1]) {
+                    if (c[1] < 0 || c[1] > self.picList.length) {
+                        c[1] = 0;
+                    }
+                    return c[1];
+                }
+            }
+        }
+        return 0;
+
+    },
+//  changeURl: function(a) {//修改URL hash段
+//      if (a >= 0) {
+//          location.hash = "#pn=" + a
+//      }
+//  },
+    dragPic : function(){ // 以下是拖动图片JS代码
+        var self = this;
+        var drag = false;
+        var dx = 0;
+        var dy = 0;
+        jq("#mainPic").mousedown(function(e){
+            drag = true;
+            dx = e.pageX;
+            dy = e.pageY;
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        jq("#mainPic").mousemove(function(e){ //给照片增加移动事件监听
+            var x = e.pageX;
+            var y = e.pageY;
+            var draging = false;
+            if(drag && !draging){
+                draging = true;
+                var left = jq("#mainPic").position().left;
+                var top = jq("#mainPic").position().top;
+                left = left+x-dx;
+                top = top+y-dy;
+                dx = x;
+                dy = y;
+                jq("#mainPic").css("left",left+"px");
+                jq("#mainPic").css("top",top+"px");
+                draging = false;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        jq(document).mouseup(function(e){//鼠标在整个页面释放时停止图片拖动
+            drag = false;
+        });
+
+        jq(".maxPic").mousewheel(function(e,delta){//鼠标滚轮事件
+            if(delta > 0){//放大
+                self.picZoom();
+            }else{
+                self.picZoom(-1);//缩小
+            }
+        });
+    },
+    getCurrentData : function(){//获取当前照片的数据
+        var self = this;
+        return self.picList[self.curPic];
+    },
+    getCurrentDataUrl : function(index){//获取当前大图片地址
+        var self = this;
+        var data = !index ? self.getCurrentData() : self.picList[index];
+        if(self.mode == 0){
+            var url = data.bigPic;
+        }else{
+            var url = data.selfPic;
+        }
+        return url;
+    },
+    setMaxPicBoxHeight : function(){
+        var self = this;
+        var maxPicHeight = 0;//大图外层DIV高度
+        var bdHeight = jq('body').height();
+        if(self.isHideThumbList){
+            if(self.isFullScreen){
+                maxPicHeight = bdHeight - 44;
+            }else{
+                maxPicHeight = bdHeight - 124;
+            }
+        }else{
+            if(self.isFullScreen){
+                maxPicHeight = bdHeight - 147;
+            }else{
+                maxPicHeight = bdHeight - 207;
+            }
+        }
+        jq('.indexbody-left,.indexbody-right,.indexbody-loading').height(maxPicHeight);
+    },//.maxPic,
+    setMaxPicBoxWdith : function(){ //计算 maxPic 的宽度
+        var self = this;
+        var bdWidth  = jq('body').width();
+        var rightCommentWidth = 0; //右边宽度
+        if(self.isFullScreen){
+            rightCommentWidth = 0;
+        } else {
+            rightCommentWidth = 392;
+        }
+        var width = bdWidth - rightCommentWidth;
+
+        jq('.maxPic').width(width);
+        jq('.minPic').width(width - 90);
+        //计算出列表显示的图片张数
+        self.thumbPageSize = parseInt((width - 90)/200)+1;
+        jq('.bottom-lists').width(width);
+        jq(".indexbody-loading").css({left: width/2});
+    },
+    setBodyWidthHeight : function(){//计算 body 的宽高
+        var self = this;
+        var maxBodyWidth = 950;
+        var maxBodyHeight = 500;
+        var bw= parseInt(jq(window).width());
+        var bh= parseInt(jq(window).height());
+        if(bw <= maxBodyWidth){
+        } else {
+        }
+        if(bh < maxBodyHeight){
+            jq('body').height(maxBodyHeight+"px");
+        } else {
+            jq('body').height("100%");
+        }
+    },
+    setWH : function(){//调节尺寸
+        var self = this;
+        self.setBodyWidthHeight();//计算 body 的宽高
+        self.setMaxPicBoxHeight();//计算 maxPic 的高度
+        self.setMaxPicBoxWdith();//计算 maxPic 的宽度
+        self.setImgPosition();//计算 中间大图的位置
+        self.onChangeWH();//回调
+    },
+    picZoom : function(zs){//放大缩小
+        var self=this;
+        var min_wid,min_hei;
+        var curWid=jq("#mainPic").width(),
+            curHei=jq("#mainPic").height();
+        var oldWid=self.picList[self.curPic].width,
+            oldHei=self.picList[self.curPic].height,
+            perLimit=Math.ceil((420/oldWid)*oldHei);
+
+        if(jq("#zoomScale").size()>0){
+            var oldPerc=parseInt(jq("#zoomScale").text());
+        }else{
+            var oldPerc= self.zoomScaleInit == null ? 100 : self.zoomScaleInit;
+        }
+        var newPerc;
+        if(zs==-1){//缩小
+            if(oldPerc <= 10){ //最小是10%
+                return;
+            }
+            newPerc=oldPerc-25;//每次减去25px
+            newPerc= newPerc < 10 ? 10: newPerc;
+            if(curWid<=420 && curHei<=perLimit){
+
+                if(oldWid<=420){
+                    wii=oldWid;
+                    hee=oldHei;
+                    min_wid="0";
+                    min_hei="0";
+                }else{
+                    wii=curWid;
+                    hee=curHei;
+                    min_wid=curWid;
+                    min_hei=curHei;
+                }
+            }else{
+                wii=curWid*newPerc/100,
+                    hee=curHei*newPerc/100;
+                min_wid=420;
+                min_hei=perLimit;
+            }
+        }else{
+            if(oldPerc>=10000){//最大是10000%
+                return;
+            }
+            newPerc=oldPerc+25;//每次增加25px
+            newPerc= newPerc > 10000 ? 10000: newPerc;
+            wii=curWid*newPerc/100;
+            hee=curHei*newPerc/100;
+        }
+        var theImage = new Image();
+        theImage.src = jq('#mainPic').attr('src');
+
+        jq("#mainPic").css({
+            "width":wii,
+            "height":hee,
+            "min-width":min_wid,
+            "min-height":min_hei,
+            "max-width":'none'
+        });
+        self.setImgPosition();
+//      else if(zs==1){
+//          newPerc=100;
+//      }
+//      self.zoomScaleInit = newPerc;
+    },
+    Autoimg : function(){//等比伸缩图像
+        var self =  this;
+        var _img = jq('#mainPic');
+        var theImage = new Image();
+        theImage.onload = function(){
+            self.setImgWidthHeight(theImage.width, theImage.height);
+        }
+        theImage.src = _img.attr('src');
+    },
+    setImgWidthHeight : function(width, height){
+        var self = this;
+        var trueH=height;
+        var trueW=width;
+        var boxWidth = jq('.maxPic').width();
+        var boxHeight = jq('.maxPic').height();
+        if((boxWidth/boxHeight)>=(trueW/trueH)){
+            if(trueH>boxHeight){
+                jq("#mainPic").height(boxHeight);
+                jq("#mainPic").width(Math.ceil(boxHeight*(trueW/trueH)));
+                jq('#zoomScale').html(self.percentage(boxHeight, trueH))
+            }else{
+                jq('#zoomScale').html('100%');
+                jq("#mainPic").height(trueH);
+                jq("#mainPic").width(trueW);
+            }
+        } else {
+            if(trueW>boxWidth){
+                jq("#mainPic").width(boxWidth);
+                jq("#mainPic").height(Math.ceil(boxWidth*(trueH/trueW)));
+                jq('#zoomScale').html(self.percentage(boxWidth, trueW));
+            }else{
+                jq('#zoomScale').html('100%');
+                jq("#mainPic").width(trueW);
+                jq("#mainPic").height(trueH);
+            }
+        }
+        self.setImgPosition();
+    },
+    setImgPosition : function(){//设置图片位置
+        var self=this;
+        jq("#mainPic").css({
+            left: (jq('.maxPic').width()-jq("#mainPic").width())/2,
+            top: (jq('.maxPic').height()-jq("#mainPic").height())/2
+        });
+        jq("#mainPic")[0].attributes['data-index'].value=self.curPic;
+    },
+    percentage : function (num, total) {//两个数的百分比
+        return (Math.round(num / total * 100) + "%");
+    },
+    imgHover : function(){
+        var self=this;
+        jq("#mainPic").on("mouseenter",function(){
+            var oldWid=self.picList[self.curPic].width,
+                oldHei=self.picList[self.curPic].height;
+            if(oldWid > jq(".maxPic").width() || oldHei > jq(".maxPic").height()){
+                jq(this).attr("title","当前图片过大，请新窗口打开");
+            }else{
+                jq(this).attr("title","");
+            }
+        });
+    },
+    init : function(params){ //对象初始化
+        var self = this;
+        //初始化参数
+        var paramsObj = params || {};
+        if(paramsObj.curPic) self.curPic = paramsObj.curPic;
+        if(paramsObj.picList) self.picList = paramsObj.picList;
+        if(paramsObj.isFullScreen) self.isFullScreen = paramsObj.isFullScreen;
+        if(paramsObj.mode) self.mode = paramsObj.mode;
+        if(paramsObj.callbackChangePic) self.callbackChangePic = paramsObj.callbackChangePic;
+        if(paramsObj.onChangeWH) self.onChangeWH = paramsObj.onChangeWH;
+        jq("#mainPic").load(function(){
+            var cData = self.getCurrentData();
+            if(cData.width<=0 || cData.height <= 0){
+                var img = new Image();
+                img.src = this.src;
+                self.setImgWidthHeight(img.width, img.height);
+            }
+            jq(".indexbody-loading").hide();
+            jq(this).show();
+        });
+        //初始尺寸
+        self.setWH();
+
+        //显示隐藏缩略图
+        jq('#imglist-btn').click(function(e){
+            if(self.isHideThumbList){
+                self.isHideThumbList = false;
+                jq('.bottom-lists').removeClass('hide');
+                jq(this).removeClass("on");
+            }else{
+                self.isHideThumbList = true;
+                jq('.bottom-lists').addClass('hide');
+                jq(this).addClass("on");
+            }
+            self.setWH();
+            self.Autoimg();
+        });
+
+        //缩略图列表图片增加点击事件
+        jq(self.thumbListContainer+" li").click(function(){
+            var index = jq(self.thumbListContainer+" li").index(jq(this));
+            self.loadPic(1, index);
+        });
+        //左边按钮、右边按钮、左边缩略图按钮、右边缩略图按钮点击事件
+        jq(".indexbody-left").click(function() {
+            self.loadPic(0);
+        });
+        jq(".indexbody-right").click(function() {
+            self.loadPic(1);
+        });
+        jq(".change.pre").click(function() {
+            self.changePic(0);
+            jq("#mainPic").css({
+                "min-width":"0",
+                "min-height":"0"
+            });
+            self.setImgPosition();
+
+        });
+        jq(".change.next").click(function() {
+            self.changePic(1);
+            jq("#mainPic").css({
+                "min-width":"0",
+                "min-height":"0"
+            });
+            self.setImgPosition();
+
+        });
+        //设置图片总数
+        jq(self.picCountContainer).text(self.picList.length);
+
+        //初始化和加载第一张图片
+        var curPicPos = self.selectByurl();
+        if (curPicPos) {
+            self.curPic = curPicPos;
+        }
+        self.loadPic(1, self.curPic, 1);
+        //非全屏才有的事件
+        if(!self.isFullScreen){
+            //放大
+            jq('#btnZoomIn').click(function(){
+                self.picZoom();
+            });
+            //缩小
+            jq('#btnZoomOut').click(function(){
+                self.picZoom(-1);
+            });
+            //实际大小
+//          jq('#btnRevert').on('click', function(){
+//              self.picZoom(1);
+//          });
+        }
+
+        //左右键跳转图片事件添加
+        self.turnPicOnkeyDown();
+
+        //图片拖动事件等
+        self.dragPic();
+    }
+
+};
