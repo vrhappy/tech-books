@@ -1,0 +1,9 @@
+TypeError: Failed to construct 'URL': Invalid URL
+    at Function.removeSizeParamsFromWordPressQuery (chrome-extension://akiljllkbielkidmammnifcnibaigelm/js/ImageCollector.js:406:19)
+    at ImageCollector.initialUrlToTry (chrome-extension://akiljllkbielkidmammnifcnibaigelm/js/ImageCollector.js:394:31)
+    at ImageCollector.fetchImage (chrome-extension://akiljllkbielkidmammnifcnibaigelm/js/ImageCollector.js:329:31)
+    at chrome-extension://akiljllkbielkidmammnifcnibaigelm/js/ImageCollector.js:108:29
+
+Warning, unable to convert chapter '4. Foreign Data Wrappers (FDW) and Parallel Query' from 'http://www.interdb.jp/pg/pgsql04.html' to valid XHTML. Your epub viewer may fail when viewing that chapter. You may need to fix the chapter manually with Calibre. 
+Conversion error message was: (This page contains the following errors:error on line 173 at column 270: error parsing attribute name
+Below is a rendering of the page up to the first error.)
